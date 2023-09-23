@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplicativo de Filtros OpenCV</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='tcc.css') }}">
+    <!-- Referência ao arquivo CSS -->
+</head>
+
+<body>
+    <header>
+        <h1>Aplicativo de Filtros OpenCV</h1>
+    </header>
+    <div class="container">
+        <div class="sidebar">
+            <div class="filter-buttons">
+                <button onclick="openFilterModal('gaussModal')">Configurar Filtro Gaussiano</button>
+                <button onclick="openFilterModal('grayModal')">Aplicar Escala de Cinza</button>
+                <button onclick="openFilterModal('averageModal')">Configurar Filtro de Média</button>
+                <button onclick="openFilterModal('sobelModal')">Configurar Filtro Sobel</button>
+            </div>
+        </div>
+        <div class="content">
+            <div class="drag-drop-area" ondrop="dropImage(event)" ondragover="allowDrop(event)">
+                Arraste e solte a imagem, ou clique <button type="button" id="select-button" onclick="document.getElementById('upload').click();">aqui</button> para visualização
+                <input type="file" id="upload" accept="image/*" style="display: none;">
+                <!-- Adiciona style="display: none;" para ocultar o input de arquivo -->
+                <img id="previewImage" class="hidden">
+            </div>
+            <div class="images-container">
+                <div class="image-wrapper">
+                    <h2>Imagem Original</h2>
+                    <img id="originalImage" src="" alt="Imagem Original" class="processed-image">
+                </div>
+                <div class="image-wrapper">
+                    <h2>Imagem Processada</h2>
+                    <img id="processedImage" src="" alt="Imagem Processada" class="processed-image">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal para configuração do filtro Gaussiano -->
+    <div id="gaussModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeFilterModal('gaussModal')">&times;</span>
+            <h2>Configurar Filtro Gaussiano</h2>
+            <label for="kernel-size-modal-gauss">Tamanho do Kernel:</label>
+            <input type="number" id="kernel-size-modal-gauss" value="5">
+            <button onclick="applyGaussianFilter()">Aplicar Filtro</button>
+        </div>
+    </div>
+
+    <!-- Modal para configuração do filtro de Escala de Cinza -->
+    <div id="grayModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeFilterModal('grayModal')">&times;</span>
+            <h2>Configurar Filtro de Escala de Cinza</h2>
+            <button onclick="applyGrayFilter()">Aplicar Filtro</button>
+        </div>
+    </div>
+
+    <!-- Modal para configuração do filtro de Média -->
+    <div id="averageModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeFilterModal('averageModal')">&times;</span>
+            <h2>Configurar Filtro de Média</h2>
+            <label for="window-size-modal-average">Tamanho da Janela de Média:</label>
+            <input type="number" id="window-size-modal-average" value="5">
+            <button onclick="applyAverageFilter()">Aplicar Filtro</button>
+        </div>
+    </div>
+
+    <!-- Modal para configuração do filtro Sobel -->
+    <div id="sobelModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeFilterModal('sobelModal')">&times;</span>
+            <h2>Configurar Filtro Sobel</h2>
+            <p>Escolha a orientação do Filtro Sobel:</p>
+            <label for="sobel-orientation-x">
+                <input type="radio" id="sobel-orientation-x" name="sobel-orientation" value="x"> Horizontal (X)
+            </label>
+            <label for="sobel-orientation-y">
+                <input type="radio" id="sobel-orientation-y" name="sobel-orientation" value="y"> Vertical (Y)
+            </label>
+            <button onclick="applySobelFilter()">Aplicar Filtro</button>
+        </div>
+    </div>
+
+    <script>
+        // Função para abrir o modal de configuração do filtro
+        function openFilterModal(filter) {
+            const modalId = `${filter}`;
+            const modal = document.getElementById(modalId);
+            modal.style.display = 'block';
+        }
+
+        // Função para fechar o modal
+        function closeFilterModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.style.display = 'none';
+        }
+
+        // Função para aplicar o filtro Gaussiano
+        function applyGaussianFilter() {
+            const previewImage = document.getElementById('previewImage');
+            const kernelSizeId = 'kernel-size-modal-gauss';
+            const filterType = 'gaussiano';
+
+            // Verifique se a imagem de pré-visualização está visível
+            if (previewImage.style.display === 'none') {
+                alert('Por favor, arraste e solte uma imagem para visualização.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('image', document.getElementById('upload').files[0]);
+            formData.append('filter', filterType);
+
+            // Recupere o valor do tamanho do kernel a partir do modal de cada filtro
+            const kernelSize = document.getElementById(kernelSizeId).value;
+            formData.append('kernel_size', kernelSize);
+
+            fetch('/aplicar-filtro', {
+                    method: 'POST',
+                    body: formData,
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro ao aplicar o filtro.');
+                    }
+                    return response.blob();
+                })
+                .then(blob => {
+                    const processedImage = document.getElementById('processedImage');
+                    processedImage.src = URL.createObjectURL(blob);
+                    closeFilterModal('gaussModal');
+                })
+                .catch(error => {
+                    alert(error.message);
+                });
+        }
+
+        // Função para aplicar o filtro de Escala de Cinza
+        function applyGrayFilter() {
+            const previewImage = document.getElementById('previewImage');
+            const filterType = 'escala-de-cinza';
+
+            // Verifique se a imagem de pré-visualização está visível
+            if (previewImage.style.display === 'none') {
+                alert('Por favor, arraste e solte uma imagem para visualização.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('image', document.getElementById('upload').files[0]);
+            formData.append('filter', filterType);
+
+            fetch('/aplicar-filtro', {
+                    method: 'POST',
+                    body: formData,
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro ao aplicar o filtro.');
+                    }
+                    return response.blob();
+                })
+                .then(blob => {
+                    const processedImage = document.getElementById('processedImage');
+                    processedImage.src = URL.createObjectURL(blob);
+                    closeFilterModal('grayModal');
+                })
+                .catch(error => {
+                    alert(error.message);
+                });
+        }
+
+        // Função para aplicar o filtro de Média
+        function applyAverageFilter() {
+            const previewImage = document.getElementById('previewImage');
+            const windowSizeId = 'window-size-modal-average';
+            const filterType = 'media';
+
+            // Verifique se a imagem de pré-visualização está visível
+            if (previewImage.style.display === 'none') {
+                alert('Por favor, arraste e solte uma imagem para visualização.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('image', document.getElementById('upload').files[0]);
+            formData.append('filter', filterType);
+
+            // Recupere o valor do tamanho da janela de média a partir do modal de Média
+            const windowSize = document.getElementById(windowSizeId).value;
+            formData.append('window_size', windowSize);
+
+            fetch('/aplicar-filtro', {
+                    method: 'POST',
+                    body: formData,
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro ao aplicar o filtro.');
+                    }
+                    return response.blob();
+                })
+                .then(blob => {
+                    const processedImage = document.getElementById('processedImage');
+                    processedImage.src = URL.createObjectURL(blob);
+                    closeFilterModal('averageModal');
+                })
+                .catch(error => {
+                    alert(error.message);
+                });
+        }
+
+        // Função para aplicar o filtro Sobel
+        function applySobelFilter() {
+            const previewImage = document.getElementById('previewImage');
+            const filterType = 'sobel';
+
+            // Verifique se a imagem de pré-visualização está visível
+            if (previewImage.style.display === 'none') {
+                alert('Por favor, arraste e solte uma imagem para visualização.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('image', document.getElementById('upload').files[0]);
+            formData.append('filter', filterType);
+
+            // Recupere a orientação do Filtro Sobel selecionada
+            const sobelOrientation = document.querySelector('input[name="sobel-orientation"]:checked');
+            if (!sobelOrientation) {
+                alert('Por favor, escolha a orientação do Filtro Sobel.');
+                return;
+            }
+            formData.append('sobel_orientation', sobelOrientation.value);
+
+            fetch('/aplicar-filtro', {
+                    method: 'POST',
+                    body: formData,
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro ao aplicar o filtro.');
+                    }
+                    return response.blob();
+                })
+                .then(blob => {
+                    const processedImage = document.getElementById('processedImage');
+                    processedImage.src = URL.createObjectURL(blob);
+                    closeFilterModal('sobelModal');
+                })
+                .catch(error => {
+                    alert(error.message);
+                });
+        }
+
+        // Após o upload da imagem, defina o atributo src da imagem original
+        document.getElementById('upload').addEventListener('change', function() {
+            const originalImage = document.getElementById('originalImage');
+            originalImage.src = URL.createObjectURL(this.files[0]);
+        });
+    </script>
+</body>
+
+</html>
