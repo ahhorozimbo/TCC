@@ -1,3 +1,4 @@
+#factory e abstract factory
 from flask import Flask, render_template, request, jsonify, send_file
 import cv2
 import numpy as np
