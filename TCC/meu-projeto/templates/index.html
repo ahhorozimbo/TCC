@@ -17,7 +17,7 @@
 
 <body>
     <header class="bg-primary text-white text-center py-3">
-        <h1>Aplicativo de Filtros OpenCV</h1>
+        <h1>AHHO Filters</h1>
     </header>
     <div class="container">
         <div class="row">
@@ -271,6 +271,11 @@
 
 
     <script>
+        // Após o upload da imagem, defina o atributo src da imagem original
+        document.getElementById('upload').addEventListener('change', function() {
+            const originalImage = document.getElementById('originalImage');
+            originalImage.src = URL.createObjectURL(this.files[0]);
+        });
     </script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
