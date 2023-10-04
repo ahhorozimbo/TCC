@@ -6,58 +6,144 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aplicativo de Filtros OpenCV</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='tcc.css') }}">
+
+    <script src="{{ url_for('static', filename='tcc.js') }}"></script>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+
     <!-- Referência ao arquivo CSS -->
 </head>
 
 <body>
-    <header>
+    <header class="bg-primary text-white text-center py-3">
         <h1>Aplicativo de Filtros OpenCV</h1>
     </header>
     <div class="container">
-        <div class="sidebar">
-            <div class="filter-buttons">
-                <button onclick="openFilterModal('gaussModal')">Configurar Filtro Gaussiano</button>
-                <button onclick="openFilterModal('grayModal')">Aplicar Escala de Cinza</button>
-                <button onclick="openFilterModal('averageModal')">Configurar Filtro de Média</button>
-                <button onclick="openFilterModal('sobelModal')">Configurar Filtro Sobel</button>
-            </div>
-        </div>
-        <div class="content">
-            <div class="drag-drop-area" ondrop="dropImage(event)" ondragover="allowDrop(event)">
-                Arraste e solte a imagem, ou clique <button type="button" id="select-button" onclick="document.getElementById('upload').click();">aqui</button> para visualização
-                <input type="file" id="upload" accept="image/*" style="display: none;">
-                <!-- Adiciona style="display: none;" para ocultar o input de arquivo -->
-                <img id="previewImage" class="hidden">
-            </div>
-            <div class="images-container">
-                <div class="image-wrapper">
-                    <h2>Imagem Original</h2>
-                    <img id="originalImage" src="" alt="Imagem Original" class="processed-image">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="filter-menu">
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            <button class="btn btn-primary" data-toggle="collapse" data-target="#smoothingFilters">Filtros de Suavização (Smoothing Filters)</button>
+                            <ul id="smoothingFilters" class="submenu collapse">
+                                <li><button class="btn btn-primary" onclick="openFilterModal('gaussModal')">Filtro Gaussiano</button></li>
+                                <li><button class="btn btn-primary" onclick="openFilterModal('averageModal')">Filtro de Média</button></li>
+                                <li><button class="btn btn-primary" onclick="openFilterModal('medianModal')">Filtro de Mediana</button></li>
+                                <li><button class="btn btn-primary" onclick="openFilterModal('bilateralModal')">Filtro Bilateral</button></li>
+                            </ul>
+                        </li>
+                        <li class="list-group-item">
+                            <button class="btn btn-primary" data-toggle="collapse" data-target="#edgeDetectionFilters">Filtros de Detecção de Borda (Edge Detection Filters)</button>
+                            <ul id="edgeDetectionFilters" class="submenu collapse">
+                                <li><button class="btn btn-primary" onclick="openFilterModal('sobelModal')">Filtro Sobel</button></li>
+                                <li><button class="btn btn-primary" onclick="openFilterModal('laplacianModal')">Filtro Laplaciano</button></li>
+                                <li><button class="btn btn-primary" onclick="openFilterModal('cannyModal')">Filtro de Canny</button></li>
+                            </ul>
+                        </li>
+                        <li class="list-group-item">
+                            <button class="btn btn-primary" data-toggle="collapse" data-target="#enhancementFilters">Filtros de Realce (Enhancement Filters)</button>
+                            <ul id="enhancementFilters" class="submenu collapse">
+                                <li><button class="btn btn-primary" onclick="openFilterModal('contrastEnhancementModal')">Filtro de Realce de Contraste</button></li>
+                                <li><button class="btn btn-primary" onclick="openFilterModal('sharpeningModal')">Filtro de Nitidez (Sharpening Filter)</button></li>
+                                <li><button class="btn btn-primary" onclick="openFilterModal('unsharpMaskModal')">Filtro Unsharp Mask</button></li>
+                            </ul>
+                        </li>
+                        <li class="list-group-item">
+                            <button class="btn btn-primary" data-toggle="collapse" data-target="#colorTransformationFilters">Filtros de Transformação de Cor (Color Transformation Filters)</button>
+                            <ul id="colorTransformationFilters" class="submenu collapse">
+                                <li><button class="btn btn-primary" onclick="openFilterModal('grayscaleConversionModal')">Conversão para Escala de Cinza</button></li>
+                                <li><button class="btn btn-primary" onclick="openFilterModal('hsvConversionModal')">Conversão para HSV (Hue, Saturation, Value)</button></li>
+                                <li><button class="btn btn-primary" onclick="openFilterModal('labConversionModal')">Conversão para Lab* (CIELAB)</button></li>
+                            </ul>
+                        </li>
+                        <li class="list-group-item">
+                            <button class="btn btn-primary" data-toggle="collapse" data-target="#thresholdingFilters">Filtros de Limiarização (Thresholding Filters)</button>
+                            <ul id="thresholdingFilters" class="submenu collapse">
+                                <li><button class="btn btn-primary" onclick="openFilterModal('binaryThresholdingModal')">Limiarização Binária</button></li>
+                                <li><button class="btn btn-primary" onclick="openFilterModal('adaptiveThresholdingModal')">Limiarização Adaptativa</button></li>
+                            </ul>
+                        </li>
+                        <li class="list-group-item">
+                            <button class="btn btn-primary" data-toggle="collapse" data-target="#segmentationFilters">Filtros de Segmentação (Segmentation Filters)</button>
+                            <ul id="segmentationFilters" class="submenu collapse">
+                                <li><button class="btn btn-primary" onclick="openFilterModal('watershedModal')">Filtro Watershed</button></li>
+                                <li><button class="btn btn-primary" onclick="openFilterModal('regionSegmentationModal')">Segmentação por Região</button></li>
+                            </ul>
+                        </li>
+                        <li class="list-group-item">
+                            <button class="btn btn-primary" data-toggle="collapse" data-target="#noiseReductionFilters">Filtros de Remoção de Ruído (Noise Reduction Filters)</button>
+                            <ul id="noiseReductionFilters" class="submenu collapse">
+                                <li><button class="btn btn-primary" onclick="openFilterModal('gaussianNoiseReductionModal')">Filtro de Remoção de Ruído Gaussiano</button></li>
+                                <li><button class="btn btn-primary" onclick="openFilterModal('meanNoiseReductionModal')">Filtro de Remoção de Ruído de Média</button></li>
+                            </ul>
+                        </li>
+                    </ul>
                 </div>
-                <div class="image-wrapper">
-                    <h2>Imagem Processada</h2>
-                    <img id="processedImage" src="" alt="Imagem Processada" class="processed-image">
+            </div>
+            <div class="col-md-9">
+                <div class="drag-drop-area" ondrop="dropImage(event)" ondragover="allowDrop(event)">
+                    Arraste e solte a imagem, ou clique <button type="button" id="select-button" onclick="document.getElementById('upload').click();" class="btn btn-primary">aqui</button> para visualização
+                    <input type="file" id="upload" accept="image/*" style="display: none;">
+                    <!-- Adiciona style="display: none;" para ocultar o input de arquivo -->
+                    <img id="previewImage" class="hidden">
+                </div>
+                <div class="images-container">
+                    <div class="image-wrapper">
+                        <h2>Imagem Original</h2>
+                        <img id="originalImage" src="" alt="Imagem Original" class="img-fluid">
+                    </div>
+                    <div class="image-wrapper">
+                        <h2>Imagem Processada</h2>
+                        <img id="processedImage" src="" alt="Imagem Processada" class="img-fluid">
+                    </div>
                 </div>
             </div>
         </div>
     </div>
     <!-- Modal para configuração do filtro Gaussiano -->
     <div id="gaussModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeFilterModal('gaussModal')">&times;</span>
-            <h2>Configurar Filtro Gaussiano</h2>
-            <label for="kernel-size-modal-gauss">Tamanho do Kernel:</label>
-            <input type="number" id="kernel-size-modal-gauss" value="5">
-            <button onclick="applyGaussianFilter()">Aplicar Filtro</button>
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Configurar Filtro Gaussiano</h2>
+                    <button type="button" class="close" data-dismiss="modal" onclick="closeFilterModal('gaussModal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <button class="btn btn-primary" onclick="toggleInfo('gaussInfo')">Info</button>
+                    <label for="kernel-size-modal-gauss">Tamanho do Kernel:</label>
+                    <input type="number" id="kernel-size-modal-gauss" value="5">
+                </div>
+                <div id="gaussInfo" class="filter-info" style="display: none;">
+                    <div class="modal-body">
+                        <h3>Informações sobre o Filtro Gaussiano</h3>
+                        <p>O filtro Gaussiano é usado para suavizar imagens, reduzir ruídos e realçar bordas.</p>
+                        <p>Ele funciona aplicando uma média ponderada dos pixels vizinhos, onde os pixels mais próximos têm maior peso.</p>
+                        <!-- Adicione mais informações aqui -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" onclick="applyGaussianFilter()">Aplicar Filtro</button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Modal para configuração do filtro de Escala de Cinza -->
-    <div id="grayModal" class="modal">
+    <!-- Modal para configuração do filtro Gaussiano -->
+    <div id="gaussianModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeFilterModal('grayModal')">&times;</span>
-            <h2>Configurar Filtro de Escala de Cinza</h2>
-            <button onclick="applyGrayFilter()">Aplicar Filtro</button>
+            <span class="close" onclick="closeFilterModal('gaussianModal')">&times;</span>
+            <button onclick="toggleInfo('gaussianInfo')">Info</button>
+            <h2>Configurar Filtro Gaussiano</h2>
+            <label for="kernel-size-modal-gaussian">Tamanho do Kernel:</label>
+            <input type="number" id="kernel-size-modal-gaussian" value="5">
+            <button onclick="applyGaussianFilter()">Aplicar Filtro</button>
+            <div id="gaussianInfo" class="filter-info" style="display: none;">
+                <h3>Informações sobre o Filtro Gaussiano</h3>
+                <p>O filtro Gaussiano é usado para suavizar imagens, reduzir ruídos e realçar bordas.</p>
+                <p>Ele funciona aplicando uma média ponderada dos pixels vizinhos, onde os pixels mais próximos têm maior peso.</p>
+                <!-- Adicione mais informações aqui -->
+            </div>
         </div>
     </div>
 
@@ -65,207 +151,131 @@
     <div id="averageModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeFilterModal('averageModal')">&times;</span>
+            <button onclick="toggleInfo('averageInfo')">Info</button>
             <h2>Configurar Filtro de Média</h2>
             <label for="window-size-modal-average">Tamanho da Janela de Média:</label>
             <input type="number" id="window-size-modal-average" value="5">
             <button onclick="applyAverageFilter()">Aplicar Filtro</button>
+            <div id="averageInfo" class="filter-info" style="display: none;">
+                <h3>Informações sobre o Filtro de Média</h3>
+                <p>O filtro de média é usado para suavizar imagens, reduzindo variações de intensidade.</p>
+                <p>Ele calcula a média dos valores dos pixels em uma janela deslizante e substitui o valor do pixel central pela média.</p>
+                <!-- Adicione mais informações aqui -->
+            </div>
         </div>
     </div>
+
+    <!-- Modal para configuração do filtro de Mediana -->
+    <div id="medianModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeFilterModal('medianModal')">&times;</span>
+            <button onclick="toggleInfo('medianInfo')">Info</button>
+            <h2>Configurar Filtro de Mediana</h2>
+            <label for="kernel-size-modal-median">Tamanho do Kernel:</label>
+            <input type="number" id="kernel-size-modal-median" value="5">
+            <button onclick="applyMedianFilter()">Aplicar Filtro</button>
+            <div id="medianInfo" class="filter-info" style="display: none;">
+                <h3>Informações sobre o Filtro de Mediana</h3>
+                <p>O filtro de mediana é usado para remover ruídos de uma imagem, preservando bordas.</p>
+                <p>Ele substitui o valor de um pixel pelo valor mediano dos pixels na vizinhança.</p>
+                <!-- Adicione mais informações aqui -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para configuração do filtro Bilateral -->
+    <div id="bilateralModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeFilterModal('bilateralModal')">&times;</span>
+            <button onclick="toggleInfo('bilateralInfo')">Info</button>
+            <h2>Configurar Filtro Bilateral</h2>
+            <label for="diameter-modal-bilateral">Diâmetro:</label>
+            <input type="number" id="diameter-modal-bilateral" value="9">
+            <label for="sigma-color-modal-bilateral">Sigma de Cor:</label>
+            <input type="number" id="sigma-color-modal-bilateral" value="75">
+            <label for="sigma-space-modal-bilateral">Sigma de Espaço:</label>
+            <input type="number" id="sigma-space-modal-bilateral" value="75">
+            <button onclick="applyBilateralFilter()">Aplicar Filtro</button>
+            <div id="bilateralInfo" class="filter-info" style="display: none;">
+                <h3>Informações sobre o Filtro Bilateral</h3>
+                <p>O filtro bilateral é usado para suavizar imagens, reduzindo ruídos, preservando bordas e detalhes.</p>
+                <p>Ele aplica uma média ponderada dos pixels vizinhos, onde tanto a diferença de intensidade de cor quanto a distância espacial são consideradas.</p>
+                <!-- Adicione mais informações aqui -->
+            </div>
+        </div>
+    </div>
+    <!-- Detecção de borda-->
 
     <!-- Modal para configuração do filtro Sobel -->
     <div id="sobelModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeFilterModal('sobelModal')">&times;</span>
+            <button onclick="toggleInfo('sobelInfo')">Info</button>
             <h2>Configurar Filtro Sobel</h2>
             <p>Escolha a orientação do Filtro Sobel:</p>
             <label for="sobel-orientation-x">
-                <input type="radio" id="sobel-orientation-x" name="sobel-orientation" value="x"> Horizontal (X)
-            </label>
+            <input type="radio" id="sobel-orientation-x" name="sobel-orientation" value="x"> Horizontal (X)
+        </label>
             <label for="sobel-orientation-y">
-                <input type="radio" id="sobel-orientation-y" name="sobel-orientation" value="y"> Vertical (Y)
-            </label>
+            <input type="radio" id="sobel-orientation-y" name="sobel-orientation" value="y"> Vertical (Y)
+        </label>
             <button onclick="applySobelFilter()">Aplicar Filtro</button>
+            <div id="sobelInfo" class="filter-info" style="display: none;">
+                <h3>Informações sobre o Filtro Sobel</h3>
+                <p>O filtro Sobel é usado para detecção de borda em imagens.</p>
+                <p>Ele calcula a gradiente de intensidade da imagem, enfatizando as mudanças de intensidade que indicam bordas.</p>
+                <!-- Adicione mais informações aqui -->
+            </div>
         </div>
     </div>
 
+    <!-- Modal para configuração do filtro Laplaciano -->
+    <div id="laplacianModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeFilterModal('laplacianModal')">&times;</span>
+            <button onclick="toggleInfo('laplacianInfo')">Info</button>
+            <h2>Configurar Filtro Laplaciano</h2>
+            <button onclick="applyLaplacianFilter()">Aplicar Filtro</button>
+            <div id="laplacianInfo" class="filter-info" style="display: none;">
+                <h3>Informações sobre o Filtro Laplaciano</h3>
+                <p>O filtro Laplaciano é usado para detecção de borda em imagens.</p>
+                <p>Ele realça as regiões de rápida variação de intensidade na imagem, que geralmente correspondem a bordas.</p>
+                <!-- Adicione mais informações aqui -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para configuração do filtro de Canny -->
+    <div id="cannyModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeFilterModal('cannyModal')">&times;</span>
+            <button onclick="toggleInfo('cannyInfo')">Info</button>
+            <h2>Configurar Filtro de Canny</h2>
+            <label for="low-threshold-modal-canny">Limiar Inferior:</label>
+            <input type="number" id="low-threshold-modal-canny" value="100">
+            <label for="high-threshold-modal-canny">Limiar Superior:</label>
+            <input type="number" id="high-threshold-modal-canny" value="200">
+            <button onclick="applyCannyFilter()">Aplicar Filtro</button>
+            <div id="cannyInfo" class="filter-info" style="display: none;">
+                <h3>Informações sobre o Filtro de Canny</h3>
+                <p>O filtro de Canny é usado para detecção de borda em imagens.</p>
+                <p>Ele utiliza uma série de etapas, incluindo suavização gaussiana, detecção de gradientes e supressão de não máximos para identificar bordas na imagem.</p>
+                <!-- Adicione mais informações aqui -->
+            </div>
+        </div>
+    </div>
+
+
+    >
+    <!-- Outros modais aqui -->
+
+
     <script>
-        // Função para abrir o modal de configuração do filtro
-        function openFilterModal(filter) {
-            const modalId = `${filter}`;
-            const modal = document.getElementById(modalId);
-            modal.style.display = 'block';
-        }
-
-        // Função para fechar o modal
-        function closeFilterModal(modalId) {
-            const modal = document.getElementById(modalId);
-            modal.style.display = 'none';
-        }
-
-        // Função para aplicar o filtro Gaussiano
-        function applyGaussianFilter() {
-            const previewImage = document.getElementById('previewImage');
-            const kernelSizeId = 'kernel-size-modal-gauss';
-            const filterType = 'gaussiano';
-
-            // Verifique se a imagem de pré-visualização está visível
-            if (previewImage.style.display === 'none') {
-                alert('Por favor, arraste e solte uma imagem para visualização.');
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append('image', document.getElementById('upload').files[0]);
-            formData.append('filter', filterType);
-
-            // Recupere o valor do tamanho do kernel a partir do modal de cada filtro
-            const kernelSize = document.getElementById(kernelSizeId).value;
-            formData.append('kernel_size', kernelSize);
-
-            fetch('/aplicar-filtro', {
-                    method: 'POST',
-                    body: formData,
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Erro ao aplicar o filtro.');
-                    }
-                    return response.blob();
-                })
-                .then(blob => {
-                    const processedImage = document.getElementById('processedImage');
-                    processedImage.src = URL.createObjectURL(blob);
-                    closeFilterModal('gaussModal');
-                })
-                .catch(error => {
-                    alert(error.message);
-                });
-        }
-
-        // Função para aplicar o filtro de Escala de Cinza
-        function applyGrayFilter() {
-            const previewImage = document.getElementById('previewImage');
-            const filterType = 'escala-de-cinza';
-
-            // Verifique se a imagem de pré-visualização está visível
-            if (previewImage.style.display === 'none') {
-                alert('Por favor, arraste e solte uma imagem para visualização.');
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append('image', document.getElementById('upload').files[0]);
-            formData.append('filter', filterType);
-
-            fetch('/aplicar-filtro', {
-                    method: 'POST',
-                    body: formData,
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Erro ao aplicar o filtro.');
-                    }
-                    return response.blob();
-                })
-                .then(blob => {
-                    const processedImage = document.getElementById('processedImage');
-                    processedImage.src = URL.createObjectURL(blob);
-                    closeFilterModal('grayModal');
-                })
-                .catch(error => {
-                    alert(error.message);
-                });
-        }
-
-        // Função para aplicar o filtro de Média
-        function applyAverageFilter() {
-            const previewImage = document.getElementById('previewImage');
-            const windowSizeId = 'window-size-modal-average';
-            const filterType = 'media';
-
-            // Verifique se a imagem de pré-visualização está visível
-            if (previewImage.style.display === 'none') {
-                alert('Por favor, arraste e solte uma imagem para visualização.');
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append('image', document.getElementById('upload').files[0]);
-            formData.append('filter', filterType);
-
-            // Recupere o valor do tamanho da janela de média a partir do modal de Média
-            const windowSize = document.getElementById(windowSizeId).value;
-            formData.append('window_size', windowSize);
-
-            fetch('/aplicar-filtro', {
-                    method: 'POST',
-                    body: formData,
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Erro ao aplicar o filtro.');
-                    }
-                    return response.blob();
-                })
-                .then(blob => {
-                    const processedImage = document.getElementById('processedImage');
-                    processedImage.src = URL.createObjectURL(blob);
-                    closeFilterModal('averageModal');
-                })
-                .catch(error => {
-                    alert(error.message);
-                });
-        }
-
-        // Função para aplicar o filtro Sobel
-        function applySobelFilter() {
-            const previewImage = document.getElementById('previewImage');
-            const filterType = 'sobel';
-
-            // Verifique se a imagem de pré-visualização está visível
-            if (previewImage.style.display === 'none') {
-                alert('Por favor, arraste e solte uma imagem para visualização.');
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append('image', document.getElementById('upload').files[0]);
-            formData.append('filter', filterType);
-
-            // Recupere a orientação do Filtro Sobel selecionada
-            const sobelOrientation = document.querySelector('input[name="sobel-orientation"]:checked');
-            if (!sobelOrientation) {
-                alert('Por favor, escolha a orientação do Filtro Sobel.');
-                return;
-            }
-            formData.append('sobel_orientation', sobelOrientation.value);
-
-            fetch('/aplicar-filtro', {
-                    method: 'POST',
-                    body: formData,
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Erro ao aplicar o filtro.');
-                    }
-                    return response.blob();
-                })
-                .then(blob => {
-                    const processedImage = document.getElementById('processedImage');
-                    processedImage.src = URL.createObjectURL(blob);
-                    closeFilterModal('sobelModal');
-                })
-                .catch(error => {
-                    alert(error.message);
-                });
-        }
-
-        // Após o upload da imagem, defina o atributo src da imagem original
-        document.getElementById('upload').addEventListener('change', function() {
-            const originalImage = document.getElementById('originalImage');
-            originalImage.src = URL.createObjectURL(this.files[0]);
-        });
     </script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 </body>
 
 </html>
