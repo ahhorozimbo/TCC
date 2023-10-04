@@ -169,13 +169,6 @@ function applySobelFilter() {
         });
 
 }
-
-// Após o upload da imagem, defina o atributo src da imagem original
-document.getElementById('upload').addEventListener('change', function() {
-    const originalImage = document.getElementById('originalImage');
-    originalImage.src = URL.createObjectURL(this.files[0]);
-});
-
 // Função para alternar as informações do filtro
 function toggleInfo(infoId) {
     const info = document.getElementById(infoId);
