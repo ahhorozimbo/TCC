@@ -50,6 +50,92 @@ function applyGaussianFilter() {
             alert(error.message);
         });
 }
+// Função para aplicar o filtro de Mediana
+function applyMedianFilter() {
+    const previewImage = document.getElementById('previewImage');
+    const kernelSizeId = 'kernel-size-modal-median';
+    const filterType = 'mediana';
+
+    // Verifique se a imagem de pré-visualização está visível
+    if (previewImage.style.display === 'none') {
+        alert('Por favor, arraste e solte uma imagem para visualização.');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('image', document.getElementById('upload').files[0]);
+    formData.append('filter', filterType);
+
+    // Recupere o valor do tamanho do kernel a partir do modal de Mediana
+    const kernelSize = document.getElementById(kernelSizeId).value;
+    formData.append('kernel_size', kernelSize);
+
+    fetch('/aplicar-filtro', {
+            method: 'POST',
+            body: formData,
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Erro ao aplicar o filtro.');
+            }
+            return response.blob();
+        })
+        .then(blob => {
+            const processedImage = document.getElementById('processedImage');
+            processedImage.src = URL.createObjectURL(blob);
+            closeFilterModal('medianModal');
+        })
+        .catch(error => {
+            alert(error.message);
+        });
+}
+
+// Função para aplicar o filtro Bilateral
+function applyBilateralFilter() {
+    const previewImage = document.getElementById('previewImage');
+    const diameterId = 'diameter-modal-bilateral';
+    const sigmaColorId = 'sigma-color-modal-bilateral';
+    const sigmaSpaceId = 'sigma-space-modal-bilateral';
+    const filterType = 'bilateral';
+
+    // Verifique se a imagem de pré-visualização está visível
+    if (previewImage.style.display === 'none') {
+        alert('Por favor, arraste e solte uma imagem para visualização.');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('image', document.getElementById('upload').files[0]);
+    formData.append('filter', filterType);
+
+    // Recupere os valores do diâmetro, sigma_color e sigma_space a partir do modal de Bilateral
+    const diameter = document.getElementById(diameterId).value;
+    const sigmaColor = document.getElementById(sigmaColorId).value;
+    const sigmaSpace = document.getElementById(sigmaSpaceId).value;
+
+    formData.append('diameter', diameter);
+    formData.append('sigma_color', sigmaColor);
+    formData.append('sigma_space', sigmaSpace);
+
+    fetch('/aplicar-filtro', {
+            method: 'POST',
+            body: formData,
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Erro ao aplicar o filtro.');
+            }
+            return response.blob();
+        })
+        .then(blob => {
+            const processedImage = document.getElementById('processedImage');
+            processedImage.src = URL.createObjectURL(blob);
+            closeFilterModal('bilateralModal');
+        })
+        .catch(error => {
+            alert(error.message);
+        });
+}
 
 // Função para aplicar o filtro de Escala de Cinza
 function applyGrayFilter() {
