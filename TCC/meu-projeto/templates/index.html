@@ -45,7 +45,7 @@
                             <button class="btn btn-primary" data-toggle="collapse" data-target="#enhancementFilters">Filtros de Realce (Enhancement Filters)</button>
                             <ul id="enhancementFilters" class="submenu collapse">
                                 <li><button class="btn btn-primary" onclick="openFilterModal('contrastEnhancementModal')">Filtro de Realce de Contraste</button></li>
-                                <li><button class="btn btn-primary" onclick="openFilterModal('sharpeningModal')">Filtro de Nitidez (Sharpening Filter)</button></li>
+                                <li><button class="btn btn-primary" onclick="openFilterModal('sharpeningModal')">Filtro de Nitidez</button></li>
                                 <li><button class="btn btn-primary" onclick="openFilterModal('unsharpMaskModal')">Filtro Unsharp Mask</button></li>
                             </ul>
                         </li>
@@ -69,13 +69,6 @@
                             <ul id="segmentationFilters" class="submenu collapse">
                                 <li><button class="btn btn-primary" onclick="openFilterModal('watershedModal')">Filtro Watershed</button></li>
                                 <li><button class="btn btn-primary" onclick="openFilterModal('regionSegmentationModal')">Segmentação por Região</button></li>
-                            </ul>
-                        </li>
-                        <li class="list-group-item">
-                            <button class="btn btn-primary" data-toggle="collapse" data-target="#noiseReductionFilters">Filtros de Remoção de Ruído (Noise Reduction Filters)</button>
-                            <ul id="noiseReductionFilters" class="submenu collapse">
-                                <li><button class="btn btn-primary" onclick="openFilterModal('gaussianNoiseReductionModal')">Filtro de Remoção de Ruído Gaussiano</button></li>
-                                <li><button class="btn btn-primary" onclick="openFilterModal('meanNoiseReductionModal')">Filtro de Remoção de Ruído de Média</button></li>
                             </ul>
                         </li>
                     </ul>
@@ -266,7 +259,190 @@
     </div>
 
 
-    >
+    
+<!-- Modal para configuração do Filtro de Realce de Contraste -->
+<div id="contrastEnhancementModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeFilterModal('contrastEnhancementModal')">&times;</span>
+        <button onclick="toggleInfo('contrastEnhancementInfo')">Info</button>
+        <h2>Configurar Filtro de Realce de Contraste</h2>
+        <label for="contrast-intensity-modal">Intensidade do Contraste:</label>
+        <input type="number" id="contrast-intensity-modal" value="1" min="0" max="10">
+        <!-- Adicione mais configurações específicas se necessário -->
+        <button onclick="applyContrastEnhancementFilter()">Aplicar Filtro</button>
+        <div id="contrastEnhancementInfo" class="filter-info" style="display: none;">
+            <h3>Informações sobre o Filtro de Realce de Contraste</h3>
+            <p>O filtro de Realce de Contraste é usado para melhorar a diferença entre as intensidades de pixels na imagem.</p>
+            <!-- Adicione mais informações aqui -->
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal para configuração do Filtro de Nitidez -->
+<div id="sharpeningModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeFilterModal('sharpeningModal')">&times;</span>
+        <button onclick="toggleInfo('sharpeningInfo')">Info</button>
+        <h2>Configurar Filtro de Nitidez</h2>
+        <label for="sharpening-intensity-modal">Intensidade:</label>
+        <input type="number" id="sharpening-intensity-modal" value="1" min="0" max="10">
+        <!-- Adicione mais configurações específicas se necessário -->
+        <button onclick="applySharpeningFilter()">Aplicar Filtro</button>
+        <div id="sharpeningInfo" class="filter-info" style="display: none;">
+            <h3>Informações sobre o Filtro de Nitidez</h3>
+            <p>O filtro de Nitidez é utilizado para realçar detalhes e melhorar a definição na imagem.</p>
+            <!-- Adicione mais informações aqui -->
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal para configuração do Filtro Unsharp Mask -->
+<div id="unsharpMaskModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeFilterModal('unsharpMaskModal')">&times;</span>
+        <button onclick="toggleInfo('unsharpMaskInfo')">Info</button>
+        <h2>Configurar Filtro Unsharp Mask</h2>
+        <label for="usm-radius-modal">Raio:</label>
+        <input type="number" id="usm-radius-modal" value="1" min="0" max="10">
+        <label for="usm-amount-modal">Quantidade:</label>
+        <input type="number" id="usm-amount-modal" value="1" min="0" max="10">
+        <!-- Adicione mais configurações específicas se necessário -->
+        <button onclick="applyUnsharpMaskFilter()">Aplicar Filtro</button>
+        <div id="unsharpMaskInfo" class="filter-info" style="display: none;">
+            <h3>Informações sobre o Filtro Unsharp Mask</h3>
+            <p>O filtro Unsharp Mask é utilizado para aumentar a nitidez e destacar bordas na imagem.</p>
+            <!-- Adicione mais informações aqui -->
+        </div>
+    </div>
+</div>
+
+<!-- Modal para configuração do filtro de Conversão para Escala de Cinza -->
+<div id="grayscaleConversionModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeFilterModal('grayscaleConversionModal')">&times;</span>
+        <button onclick="toggleInfo('grayscaleConversionInfo')">Info</button>
+        <h2>Configurar Filtro de Conversão para Escala de Cinza</h2>
+        <!-- Adicione configurações específicas se necessário -->
+        <button onclick="applyGrayscaleConversionFilter()">Aplicar Filtro</button>
+        <div id="grayscaleConversionInfo" class="filter-info" style="display: none;">
+            <h3>Informações sobre o Filtro de Conversão para Escala de Cinza</h3>
+            <p>O filtro de Conversão para Escala de Cinza transforma a imagem colorida em uma imagem em tons de cinza.</p>
+            <!-- Adicione mais informações aqui -->
+        </div>
+    </div>
+</div>
+
+<!-- Modal para configuração do filtro de Conversão para HSV -->
+<div id="hsvConversionModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeFilterModal('hsvConversionModal')">&times;</span>
+        <button onclick="toggleInfo('hsvConversionInfo')">Info</button>
+        <h2>Configurar Filtro de Conversão para HSV</h2>
+        <!-- Adicione configurações específicas se necessário -->
+        <button onclick="applyHSVConversionFilter()">Aplicar Filtro</button>
+        <div id="hsvConversionInfo" class="filter-info" style="display: none;">
+            <h3>Informações sobre o Filtro de Conversão para HSV</h3>
+            <p>O filtro de Conversão para HSV transforma a imagem colorida em uma representação HSV.</p>
+            <!-- Adicione mais informações aqui -->
+        </div>
+    </div>
+</div>
+
+<!-- Modal para configuração do filtro de Conversão para Lab* -->
+<div id="labConversionModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeFilterModal('labConversionModal')">&times;</span>
+        <button onclick="toggleInfo('labConversionInfo')">Info</button>
+        <h2>Configurar Filtro de Conversão para Lab*</h2>
+        <!-- Adicione configurações específicas se necessário -->
+        <button onclick="applyLabConversionFilter()">Aplicar Filtro</button>
+        <div id="labConversionInfo" class="filter-info" style="display: none;">
+            <h3>Informações sobre o Filtro de Conversão para Lab*</h3>
+            <p>O filtro de Conversão para Lab* (CIELAB) transforma a imagem colorida em uma representação Lab*.</p>
+            <!-- Adicione mais informações aqui -->
+        </div>
+    </div>
+</div>
+
+<!-- Modal para configuração do filtro de Limiarização Binária -->
+<div id="binaryThresholdingModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeFilterModal('binaryThresholdingModal')">&times;</span>
+        <button onclick="toggleInfo('binaryThresholdingInfo')">Info</button>
+        <h2>Configurar Filtro de Limiarização Binária</h2>
+        <!-- Adicione configurações específicas se necessário -->
+        <label for="binary-threshold-modal">Limiar:</label>
+        <input type="number" id="binary-threshold-modal" value="128" min="0" max="255">
+        <button onclick="applyBinaryThresholdingFilter()">Aplicar Filtro</button>
+        <div id="binaryThresholdingInfo" class="filter-info" style="display: none;">
+            <h3>Informações sobre o Filtro de Limiarização Binária</h3>
+            <p>O filtro de Limiarização Binária segmenta a imagem com base em um limiar fixo.</p>
+            <!-- Adicione mais informações aqui -->
+        </div>
+    </div>
+</div>
+
+<!-- Modal para configuração do filtro de Limiarização Adaptativa -->
+<div id="adaptiveThresholdingModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeFilterModal('adaptiveThresholdingModal')">&times;</span>
+        <button onclick="toggleInfo('adaptiveThresholdingInfo')">Info</button>
+        <h2>Configurar Filtro de Limiarização Adaptativa</h2>
+        <!-- Adicione configurações específicas se necessário -->
+        <label for="adaptive-threshold-modal">Tamanho da Janela:</label>
+        <input type="number" id="adaptive-threshold-modal" value="11" min="3" step="2">
+        <label for="adaptive-constant-modal">Constante de Subtração:</label>
+        <input type="number" id="adaptive-constant-modal" value="2">
+        <button onclick="applyAdaptiveThresholdingFilter()">Aplicar Filtro</button>
+        <div id="adaptiveThresholdingInfo" class="filter-info" style="display: none;">
+            <h3>Informações sobre o Filtro de Limiarização Adaptativa</h3>
+            <p>O filtro de Limiarização Adaptativa ajusta o limiar para cada região da imagem com base na média local.</p>
+            <!-- Adicione mais informações aqui -->
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal para configuração do filtro Watershed -->
+<div id="watershedModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeFilterModal('watershedModal')">&times;</span>
+        <button onclick="toggleInfo('watershedInfo')">Info</button>
+        <h2>Configurar Filtro Watershed</h2>
+        <!-- Adicione configurações específicas se necessário -->
+        <label for="watershed-modal">Parâmetro X:</label>
+        <input type="number" id="watershed-modal" value="1" min="0" max="10">
+        <button onclick="applyWatershedFilter()">Aplicar Filtro</button>
+        <div id="watershedInfo" class="filter-info" style="display: none;">
+            <h3>Informações sobre o Filtro Watershed</h3>
+            <p>O filtro Watershed é usado para segmentação de imagens, identificando regiões distintas.</p>
+            <!-- Adicione mais informações aqui -->
+        </div>
+    </div>
+</div>
+
+<!-- Modal para configuração do filtro de Segmentação por Região -->
+<div id="regionSegmentationModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeFilterModal('regionSegmentationModal')">&times;</span>
+        <button onclick="toggleInfo('regionSegmentationInfo')">Info</button>
+        <h2>Configurar Filtro de Segmentação por Região</h2>
+        <!-- Adicione configurações específicas se necessário -->
+        <label for="region-segmentation-modal">Parâmetro Y:</label>
+        <input type="number" id="region-segmentation-modal" value="1" min="0" max="10">
+        <button onclick="applyRegionSegmentationFilter()">Aplicar Filtro</button>
+        <div id="regionSegmentationInfo" class="filter-info" style="display: none;">
+            <h3>Informações sobre o Filtro de Segmentação por Região</h3>
+            <p>O filtro de Segmentação por Região identifica e destaca diferentes regiões ou objetos na imagem.</p>
+            <!-- Adicione mais informações aqui -->
+        </div>
+    </div>
+</div>
+
+
+
     <!-- Outros modais aqui -->
 
 
